@@ -1,0 +1,74 @@
+#include <iostream>
+#include <Windows.h>
+using namespace std;
+
+const int COUNT_THREAD = 10;
+volatile int pos[COUNT_THREAD];
+volatile int pole[51];
+
+DWORD WINAPI Go(LPVOID num) {
+	int idThread = (int)num;
+	srand(time(0) + idThread);
+	while (pos[idThread] < 50) {
+
+		int step = rand() % 3;
+		int delay = 1 + rand() % 3;
+
+		pos[idThread] += step;
+		if (pos[idThread] > 49) {
+			pos[idThread] = 50;
+		}
+
+		Sleep(500);
+
+	}
+	return 0;
+}
+
+void Display() {
+	for (int i = 0; i < 51; i++) {
+			pole[i] = '.';
+	}
+	pole[50] = 'F';
+
+	for (int i = 0; i < COUNT_THREAD; i++) {
+		int p = pos[i];
+		if (p < 50) {
+			pole[p] = '@';
+		}
+	}
+
+	for (int i = 0; i < 51; i++) {
+		cout << (char)pole[i];
+	}
+}
+
+int main()
+{
+	setlocale(0, "rus");
+
+	DWORD IDThread[COUNT_THREAD];
+	HANDLE hThread[COUNT_THREAD];
+
+	for (int i = 0; i < COUNT_THREAD; i++) {
+		int num = i + 1;
+		hThread[i] = CreateThread(NULL, 0, Go, (LPVOID)num, 0, (IDThread + 1));
+	}
+
+	bool allFinish = false;
+	while (!allFinish) {
+		Sleep(500);
+		system("cls");
+		Display();
+
+		allFinish = true;
+
+		for (int i = 0; i < COUNT_THREAD; i++) {
+			if (pos[i] < 50) {
+				allFinish = false;
+			}
+		}
+	}
+
+	cout << "Все финишировали!" << endl;
+}
