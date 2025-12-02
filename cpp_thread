@@ -3,8 +3,10 @@
 using namespace std;
 
 const int COUNT_THREAD = 10;
+volatile bool isWinner = false;
 volatile int pos[COUNT_THREAD];
 volatile int pole[51];
+
 
 DWORD WINAPI Go(LPVOID num) {
 	int idThread = (int)num;
@@ -17,6 +19,10 @@ DWORD WINAPI Go(LPVOID num) {
 		pos[idThread] += step;
 		if (pos[idThread] > 49) {
 			pos[idThread] = 50;
+			if (isWinner = false) {
+				isWinner = true;
+				cout << "Побелила черепаха с номером - " << idThread << endl;
+			}
 		}
 
 		Sleep(500);
@@ -27,7 +33,7 @@ DWORD WINAPI Go(LPVOID num) {
 
 void Display() {
 	for (int i = 0; i < 51; i++) {
-			pole[i] = '.';
+		pole[i] = '.';
 	}
 	pole[50] = 'F';
 
